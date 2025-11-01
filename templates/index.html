@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>モテLINE添削AI</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f2f4f8;
+      margin: 0;
+      padding: 2em;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1em;
+    }
+
+    h2 {
+  text-align: center;
+  margin-bottom: 1em;
+  font-size: 1.2em;        /* 少し小さめ */
+  color: #666;             /* 薄めのグレー */
+  font-weight: normal;     /* 通常の太さに調整（お好み） */
+  letter-spacing: 0.5px;
+
+}
+
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background-color: white;
+      border-radius: 12px;
+      padding: 2em;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .input-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+    }
+
+    .message-row {
+      display: flex;
+      align-items: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .message-row.partner {
+      justify-content: flex-start;
+    }
+
+    .chat-bubble {
+      max-width: 60%;
+      padding: 10px 15px;
+      border-radius: 18px;
+      font-size: 1em;
+      line-height: 1.5;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+      position: relative;
+    }
+
+    .user .chat-bubble {
+      background-color: #dcf8c6;
+      margin-left: 10px;
+      border-bottom-right-radius: 0;
+    }
+
+    .partner .chat-bubble {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+      border-bottom-left-radius: 0;
+    }
+
+    .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    textarea {
+      width: 100%;
+      border: none;
+      resize: none;
+      background: transparent;
+      font-size: 1em;
+      font-family: inherit;
+      line-height: 1.4;
+      outline: none;
+    }
+
+    button, select {
+      padding: 0.6em 1em;
+      font-size: 1em;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 1em;
+    }
+
+    .output-section {
+      margin-top: 2em;
+    }
+
+    .chat-area, .explanation-area {
+      background-color: #f9f9f9;
+      padding: 1em;
+      border-radius: 10px;
+      margin-top: 1em;
+    }
+  </style>
+
+  <script>
+    function addLine() {
+      const container = document.getElementById("line-container");
+      const index = container.querySelectorAll("textarea").length / 2;
+
+      const userHTML = `
+        <div class="message-row user">
+          <div class="chat-bubble user">
+            <textarea name="user_line_${index}" rows="2" placeholder="自分の発言を入力"></textarea>
+          </div>
+          <img src="/static/images/user_icon.png" class="icon">
+        </div>`;
+
+      const partnerHTML = `
+        <div class="message-row partner">
+          <img src="/static/images/partner_icon.png" class="icon">
+          <div class="chat-bubble partner">
+            <textarea name="partner_line_${index}" rows="2" placeholder="相手の発言を入力"></textarea>
+          </div>
+        </div>`;
+
+      container.insertAdjacentHTML("beforeend", userHTML + partnerHTML);
+    }
+  </script>
+</head>
+
+<body>
+  <h1>🧠 モテLINE添削AI</h1>
+  <h2>気になる相手のLINEの返信なんて返すか迷いませんか？そんなあなたの悩みに寄り添います。</h2>
+
+  <div class="container">
+    <form method="POST" class="input-form">
+      <div id="line-container">
+        <!-- 最初の会話行 -->
+        <div class="message-row user">
+          <div class="chat-bubble user">
+            <textarea name="user_line_0" rows="2" placeholder="自分の発言を入力"></textarea>
+          </div>
+          <img src="{{ url_for('static', filename='images/user_icon.png') }}" class="icon">
+        </div>
+
+        <div class="message-row partner">
+          <img src="{{ url_for('static', filename='images/partner_icon.png') }}" class="icon">
+          <div class="chat-bubble partner">
+            <textarea name="partner_line_0" rows="2" placeholder="相手の発言を入力"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" onclick="addLine()">＋会話を追加</button>
+
+      <label>🎭 誰に教えてもらいたい？：</label>
+      <select name="tone">
+        <option value="default">モテの先生</option>
+        <option value="male">頼りになる男の先輩</option>
+        <option value="female">仲のいい女友達</option>
+      </select>
+
+      <button type="submit">💕モテ返信を教えてもらう💕</button>
+    </form>
+
+    <div class="output-section">
+      {% if bubbles %}
+        <h2>🟢 LINE風モテ返信</h2>
+        <div class="chat-area">
+          {{ bubbles|safe }}
+        </div>
+      {% endif %}
+
+      {% if explanations %}
+        <h2>📝 モテ返信の解説</h2>
+        <div class="explanation-area">
+          {{ explanations|safe }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+</html>
